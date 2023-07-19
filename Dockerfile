@@ -7,6 +7,7 @@ COPY . .
 
 RUN npm install --production
 RUN npm install pm2 -g
+RUN npm install http-server -g
 
 RUN pm2 start http-server -- ./public-html
 
