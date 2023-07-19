@@ -6,6 +6,8 @@ ENV NODE_ENV=production
 COPY . .
 
 RUN npm install --production
-RUN npm start
+RUN npm install pm2 -g
+
+RUN pm2 start http-server -- ./public-html
 
 
