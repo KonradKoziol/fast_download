@@ -1,3 +1,11 @@
-FROM httpd:2.4
- 
-COPY ./public-html/ /usr/local/apache2/htdocs/
+FROM node:18-alpine
+ENV NODE_ENV=production
+
+#COPY ["package.json", "package-lock.json*", "./"]
+
+COPY . .
+
+RUN npm install --production
+RUN npm start
+
+

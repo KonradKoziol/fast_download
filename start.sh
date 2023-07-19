@@ -1,1 +1,1 @@
-pm2 start http-server -- ./public
+npm start http-server -- ./public-html
