@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple SPA</title>
+</head>
+<body>
+  <div id="app">
+    <!-- Content will be dynamically rendered here -->
+  </div>
+
+  <script>
+    // Check if login and password are stored in localStorage
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    
+    // Define the main app element
+    const app = document.getElementById('app');
+
+    // Render the appropriate content based on login status
+    if (isLoggedIn) {
+      renderSecondPage();
+    } else {
+      renderLoginPage();
+    }
+
+    // Function to render the login page
+    function renderLoginPage() {
+      app.innerHTML = `
+        <h1>Login Page</h1>
+        <input type="text" id="login" placeholder="Login"><br>
+        <input type="password" id="password" placeholder="Password"><br>
+        <button id="loginButton">Login</button>
+      `;
+
+      const loginButton = document.getElementById('loginButton');
+      loginButton.addEventListener('click', () => {
+        const loginInput = document.getElementById('login');
+        const passwordInput = document.getElementById('password');
+        
+        if (loginInput.value && passwordInput.value) {
+          localStorage.setItem('isLoggedIn', 'true');
+          renderSecondPage();
+        }
+      });
+    }
+	
+	//hash
+    const babajakga = async (input) => {
+      const textAsBuffer = new TextEncoder().encode(input);
+      const hashBuffer = await window.crypto.subtle.digest("SHA-256", textAsBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hash = hashArray
+        .map((item) => item.toString(16).padStart(2, "0"))
+        .join("");
+      return hash;
+    };
+
+    // Function to render the second page
+    function renderSecondPage() {
+      app.innerHTML = `
+        <h1>Sumbit rules</h1>
+        <form id="dataForm">
+          <input type="text" id="ip" placeholder="IP"><br>
+          <input type="text" id="region" placeholder="Region"><br>
+          <input type="text" id="country" placeholder="Country"><br>
+          <button id="submitButton">Submit</button>
+        </form>
+      `;
+
+      const dataForm = document.getElementById('dataForm');
+      dataForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const ipInput = document.getElementById('ip');
+        const regionInput = document.getElementById('region');
+        const countryInput = document.getElementById('country');
+        
+        if (!validateIPAddress(ipInput.value)) {
+          alert('Invalid IP address');
+          return;
+        }
+
+        let rightNow = new Date();
+        rightNow = rightNow.toLocaleString('en-GB', { hour: '2-digit', day: '2-digit', month: '2-digit', hour12: false, timeZone: 'Europe/London' });
+
+        const loginInput = localStorage.getItem('loginInput');
+        const passwordInput = localStorage.getItem('passwordInput');
+        const losToccennoss = loginInput + ":" + passwordInput + ":" + rightNow;
+        babajakga(losToccennoss).then(async elem => {
+			console.log(elem)
+			await sendDataToServer(ipInput.value, regionInput.value, countryInput.value, elem);
+		  }
+        );
+
+        console.log('IP:', ipInput.value);
+        console.log('Region:', regionInput.value);
+        console.log('Country:', countryInput.value);
+
+
+
+        renderThirdPage();
+      });
+    }
+
+    // Function to render the third page
+    function renderThirdPage() {
+      app.innerHTML = `
+        <p>The form was sent</p>
+      `;
+    }
+
+    // Function to validate IPv4 address using regex
+    function validateIPAddress(ip) {
+	  if(!ip || ip==='')
+		return true;
+      const ipv4Pattern = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+      return ipv4Pattern.test(ip);
+    }
+
+    // Function to send data to the server
+    async function sendDataToServer(ip, region, country, key) {
+      const url = 'http://3.76.73.17:8080'; 
+      const data = { ip, region, country, key };
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to send data to server');
+        }
+      } catch (error) {
+        console.error('Error sending data to server:', error);
+      }
+    }
+  </script>
+</body>
+</html>
