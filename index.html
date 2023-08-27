@@ -9,7 +9,7 @@
   <div id="app">
     <!-- Content will be dynamically rendered here -->
   </div>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
   <script>
     // Check if login and password are stored in localStorage
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -86,11 +86,9 @@
         const loginInput = localStorage.getItem('loginInput');
         const passwordInput = localStorage.getItem('passwordInput');
         const losToccennoss = loginInput + ":" + passwordInput + ":" + rightNow;
-        babajakga(losToccennoss).then(async elem => {
-			console.log(elem)
-			await sendDataToServer(ipInput.value, regionInput.value, countryInput.value, elem);
-		  }
-        );
+		const supers = sha256(losToccennoss);
+		console.log(supers);
+		sendDataToServer(ipInput.value, regionInput.value, countryInput.value, supers);
 
         console.log('IP:', ipInput.value);
         console.log('Region:', regionInput.value);
